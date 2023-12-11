@@ -1,4 +1,4 @@
-name: Check Workflow
+name: Check Pull Request
 
 on:
   push:
@@ -6,39 +6,33 @@ on:
       - main  # 或者您的默认分支
 
 jobs:
-  check_workflow:
+  check_pull_request:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        conda-version: latest
-        python-version: 3.8  # 或者您项目所需的 Python 版本
+        python-version: 3.8
 
-    - name: Create Conda environment
+    - name: Run setup.sh
       run: |
-        source create_test_env.sh  # 创建 myenv测试环境
-
-    - name: Install dependencies
-      run: |
-        source setup.sh  # 安装所需库
+        chmod +x setup.sh
+        ./setup.sh
 
     - name: Run run_bash.sh and check for errors
-      id: run_script
       run: |
-        output=$(source run_bash.sh)  # 运行示例项目
-        echo "$output"  # 输出脚本的运行结果
+        chmod +x run_bash.sh
+        output=$(./run_bash.sh)
+        echo "$output"
 
-      # 检查输出中是否包含 "error" 字符串
-    - name: Check for errors
-      run: |
-        if echo "${{ steps.run_script.outputs.stdout }}" | grep -q "error"; then
-          echo "Error found in the output. Pull operation failed."
+        # 检查输出是否包含 "error" 字符串
+        if echo "$output" | grep -q "error"; then
+          echo "Error found in the output. Pull request failed."
           exit 1
         else
-          echo "No errors found. Pull operation succeeded."
+          echo "No errors found in the output. Pull request succeeded."
         fi
