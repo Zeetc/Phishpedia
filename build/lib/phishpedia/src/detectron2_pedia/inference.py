@@ -4,6 +4,7 @@ from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 import cv2
 import numpy as np
+import torch
 
 
 def pred_rcnn(im, predictor):
