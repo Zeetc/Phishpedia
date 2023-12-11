@@ -46,27 +46,6 @@ def config_rcnn(cfg_path, weights_path, conf_threshold):
     :return:
     '''
     cfg = get_cfg()
-    cfg_path = "phishpedia" + cfg_path
-    cfg.merge_from_file(cfg_path)
-    cfg.MODEL.WEIGHTS = weights_path
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = conf_threshold
-    # uncomment if you installed detectron2 cpu version
-    # cfg.MODEL.DEVICE = 'cpu'
-
-    # Initialize model
-    predictor = DefaultPredictor(cfg)
-    return predictor
-
-def config_rcnn_git_action(cfg_path, weights_path, conf_threshold):
-    '''
-    Configure weights and confidence threshold
-    :param cfg_path:
-    :param weights_path:
-    :param conf_threshold:
-    :return:
-    '''
-    cfg = get_cfg()
-    cfg_path = "phishpedia" + cfg_path
     cfg.merge_from_file(cfg_path)
     cfg.MODEL.WEIGHTS = weights_path
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = conf_threshold
