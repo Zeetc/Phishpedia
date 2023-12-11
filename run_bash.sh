@@ -1,2 +1,2 @@
-python test.py
+python ./phishpedia/test.py
 echo "error"
