@@ -32,7 +32,8 @@ def load_config(cfg_path: Union[str, None]):
     SIAMESE_THRE = configs['SIAMESE_MODEL']['MATCH_THRE']
 
     print('Load protected logo list')
-    targetlist_zip_path = "phishpedia" + configs['SIAMESE_MODEL']['TARGETLIST_PATH']
+    # targetlist_zip_path = "phishpedia" + configs['SIAMESE_MODEL']['TARGETLIST_PATH']
+    targetlist_zip_path = "/home/runner/work/Phishpedia/Phishpedia/phishpedia/src/detectron2_pedia/output/rcnn_2/phishpedia/src/siamese_pedia/expand_targetlist.zip"
     targetlist_dir = os.path.dirname(targetlist_zip_path)
     zip_file_name = os.path.basename(targetlist_zip_path)
     targetlist_folder = zip_file_name.split('.zip')[0]
@@ -43,14 +44,15 @@ def load_config(cfg_path: Union[str, None]):
         subprocess.run(f'unzip -o "{targetlist_zip_path}" -d "{full_targetlist_folder_dir}"', shell=True)
 
     weights_path = "phishpedia" + configs['SIAMESE_MODEL']['WEIGHTS_PATH'].replace('/', os.sep)
+    weights_path = "/home/runner/work/Phishpedia/Phishpedia/phishpedia/src/detectron2_pedia/output/rcnn_2/phishpedia/src/siamese_pedia/resnetv2_rgb_new.pth.tar"
     SIAMESE_MODEL, LOGO_FEATS, LOGO_FILES = phishpedia_config(
                                                 num_classes=configs['SIAMESE_MODEL']['NUM_CLASSES'],
                                                 weights_path=weights_path,
                                                 targetlist_path=full_targetlist_folder_dir.replace('/', os.sep))
     print('Finish loading protected logo list')
 
-    DOMAIN_MAP_PATH = "phishpedia" + configs['SIAMESE_MODEL']['DOMAIN_MAP_PATH'].replace('/', os.sep)
-
+    # DOMAIN_MAP_PATH = "phishpedia" + configs['SIAMESE_MODEL']['DOMAIN_MAP_PATH'].replace('/', os.sep)
+    DOMAIN_MAP_PATH = "/home/runner/work/Phishpedia/Phishpedia/phishpedia/src/detectron2_pedia/output/rcnn_2/phishpedia/src/siamese_pedia/domain_map.pkl"
     return ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEATS, LOGO_FILES, DOMAIN_MAP_PATH
 
 

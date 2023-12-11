@@ -50,7 +50,8 @@ def config_rcnn(cfg_path, weights_path, conf_threshold):
     cfg.MODEL.WEIGHTS = weights_path
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = conf_threshold
     # uncomment if you installed detectron2 cpu version
-    cfg.MODEL.DEVICE = 'cpu'
+    if not torch.cuda.is_available():
+        cfg.MODEL.DEVICE = 'cpu'
 
     # Initialize model
     predictor = DefaultPredictor(cfg)
