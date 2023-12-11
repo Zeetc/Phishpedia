@@ -1,6 +1,9 @@
 from phishpedia.phishpedia_main import test
 import matplotlib.pyplot as plt
+import torch
 
+# 设置 PyTorch 在 CPU 模式下运行
+torch.set_default_tensor_type(torch.FloatTensor)
 
 # Global configuration
 from phishpedia.src.siamese import *

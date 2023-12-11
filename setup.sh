@@ -25,17 +25,15 @@ if [[ "$OS" == "Darwin" ]]; then
   python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.9/index.html"
 else
   # Check if NVIDIA GPU is available for Linux and Windows
-  # if command -v nvcc || command -v nvidia-smi &> /dev/null; then   # MODIFY
-  #   echo "CUDA is detected, installing GPU-supported PyTorch and torchvision."
-  #   pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
-  #   python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html"
-  # else
-  #   echo "No CUDA detected, installing CPU-only PyTorch and torchvision."
-  #   pip install torch==1.9.0+cpu torchvision==0.10.0+cpu torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
-  #   python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.9/index.html"
-  # fi
-  pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
-  
+  if command -v nvcc || command -v nvidia-smi &> /dev/null; then   # MODIFY
+    echo "CUDA is detected, installing GPU-supported PyTorch and torchvision."
+    pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
+    python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html"
+  else
+    echo "No CUDA detected, installing CPU-only PyTorch and torchvision."
+    pip install torch==1.9.0+cpu torchvision==0.10.0+cpu torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
+    python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.9/index.html"
+  fi
 fi
 
 ## Download models
