@@ -45,9 +45,11 @@ if [ -z "Phishpedia" ]; then
   exit 1
 else
   echo "Going to the directory of package Phishpedia in Conda environment myenv."
+  mkdir -p "phishpedia/src/detectron2_pedia/output/rcnn_2"
   cd "phishpedia/src/detectron2_pedia/output/rcnn_2" || exit
   pip install gdown
   gdown --id 1tE2Mu5WC8uqCxei3XqAd7AWaP5JTmVWH
+  mkdir -p "phishpedia/src/siamese_pedia/"
   cd "phishpedia/src/siamese_pedia/" || exit
   gdown --id 1H0Q_DbdKPLFcZee8I14K62qV7TTy7xvS
   gdown --id 1fr5ZxBKyDiNZ_1B6rRAfZbAHBBoUjZ7I
