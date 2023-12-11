@@ -22,14 +22,14 @@ def load_config(cfg_path: Union[str, None]):
 
     ELE_CFG_PATH = "phishpedia" + configs['ELE_MODEL']['CFG_PATH'].replace('/', os.sep)
     ELE_WEIGHTS_PATH = "phishpedia" + configs['ELE_MODEL']['WEIGHTS_PATH'].replace('/', os.sep)
-    ELE_CONFIG_THRE = "phishpedia" + configs['ELE_MODEL']['DETECT_THRE']
+    ELE_CONFIG_THRE = configs['ELE_MODEL']['DETECT_THRE']
     ELE_MODEL = config_rcnn(ELE_CFG_PATH, ELE_WEIGHTS_PATH, conf_threshold=ELE_CONFIG_THRE)
 
     # siamese model
     SIAMESE_THRE = configs['SIAMESE_MODEL']['MATCH_THRE']
 
     print('Load protected logo list')
-    targetlist_zip_path = configs['SIAMESE_MODEL']['TARGETLIST_PATH']
+    targetlist_zip_path = "phishpedia" + configs['SIAMESE_MODEL']['TARGETLIST_PATH']
     targetlist_dir = os.path.dirname(targetlist_zip_path)
     zip_file_name = os.path.basename(targetlist_zip_path)
     targetlist_folder = zip_file_name.split('.zip')[0]
@@ -39,13 +39,14 @@ def load_config(cfg_path: Union[str, None]):
         os.makedirs(full_targetlist_folder_dir, exist_ok=True)
         subprocess.run(f'unzip -o "{targetlist_zip_path}" -d "{full_targetlist_folder_dir}"', shell=True)
 
+    weights_path = "phishpedia" + configs['SIAMESE_MODEL']['WEIGHTS_PATH'].replace('/', os.sep)
     SIAMESE_MODEL, LOGO_FEATS, LOGO_FILES = phishpedia_config(
                                                 num_classes=configs['SIAMESE_MODEL']['NUM_CLASSES'],
-                                                weights_path=configs['SIAMESE_MODEL']['WEIGHTS_PATH'].replace('/', os.sep),
+                                                weights_path=weights_path,
                                                 targetlist_path=full_targetlist_folder_dir.replace('/', os.sep))
     print('Finish loading protected logo list')
 
-    DOMAIN_MAP_PATH = configs['SIAMESE_MODEL']['DOMAIN_MAP_PATH'].replace('/', os.sep)
+    DOMAIN_MAP_PATH = "phishpedia" + configs['SIAMESE_MODEL']['DOMAIN_MAP_PATH'].replace('/', os.sep)
 
     return ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEATS, LOGO_FILES, DOMAIN_MAP_PATH
 
