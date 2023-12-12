@@ -3,7 +3,7 @@ name: Check Pull Request
 on:
   push:
     branches:
-      - main  # 或者您的默认分支
+      - main  # push到main分支时检测
 
 jobs:
   check_pull_request:
@@ -16,14 +16,14 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.8 # 指定python版本，github的云服务器弄conda较为复杂
 
-    - name: Run setup.sh
+    - name: Run setup.sh  # 安装所需库
       run: |
         chmod +x setup.sh
         ./setup.sh
 
-    - name: Run run_bash.sh and check for errors
+    - name: Run run_bash.sh and check for errors  # 自动执行demo示例，查看是否报错
       run: |
         chmod +x run_bash.sh
         output=$(./run_bash.sh)
