@@ -15,6 +15,9 @@ source "$CONDA_BASE/etc/profile.d/conda.sh"
 #    conda activate myenv
 # fi
 
+conda create -n Phishpedia python=3.8
+conda activate Phishpedia
+
 pip install -r requirements.txt
 
 OS=$(uname -s)
@@ -26,9 +29,22 @@ if [[ "$OS" == "Darwin" ]]; then
 else
   # Check if NVIDIA GPU is available for Linux and Windows
   if command -v nvcc || command -v nvidia-smi &> /dev/null; then   # MODIFY
-    echo "CUDA is detected, installing GPU-supported PyTorch and torchvision."
-    pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
-    python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html"
+    CUDA_VERSION=$(nvidia-smi | grep "CUDA" | awk '{print $9}')
+    echo "Detected CUDA version is $CUDA_VERSION"
+    if [[ "$CUDA_VERSION" < "11.1" ]]; then
+      if [[ "$CUDA_VERSION" > "10.2" ]]; then 
+        echo "CUDA version is lower than 11.1. Using old version of PyTorch."
+        pip install torch==1.9.0+cu102 torchvision==0.10.0+cu102 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
+        python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.9/index.html"
+      else
+        echo "CUDA version is lower than 10.2. Consider updating your CUDA."
+        exit 1
+      fi
+    else
+      echo "CUDA is detected, installing GPU-supported PyTorch and torchvision."
+      pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
+      python -m pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html"
+    fi
   else
     echo "No CUDA detected, installing CPU-only PyTorch and torchvision."
     pip install torch==1.9.0+cpu torchvision==0.10.0+cpu torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
@@ -46,11 +62,11 @@ if [ -z "Phishpedia" ]; then
 else
   echo "Going to the directory of package Phishpedia in Conda environment myenv."
   mkdir -p "phishpedia/src/detectron2_pedia/output/rcnn_2"
-  cd "phishpedia/src/detectron2_pedia/output/rcnn_2" || exit
+  cd "phishpedia/src/detectron2_pedia/output/rcnn_2" || exit 1
   pip install gdown
   gdown --id 1tE2Mu5WC8uqCxei3XqAd7AWaP5JTmVWH
   mkdir -p "phishpedia/src/siamese_pedia/"
-  cd "phishpedia/src/siamese_pedia/" || exit
+  cd "phishpedia/src/siamese_pedia/" || exit 1
   gdown --id 1H0Q_DbdKPLFcZee8I14K62qV7TTy7xvS
   gdown --id 1fr5ZxBKyDiNZ_1B6rRAfZbAHBBoUjZ7I
   gdown --id 1qSdkSSoCYUkZMKs44Rup_1DPBxHnEKl1

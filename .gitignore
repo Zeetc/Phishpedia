@@ -1,3 +1,6 @@
 *.zip
 *.pkl
 *.pth*
+*.pyc
+build/
+phishpedia.egg-info
