@@ -5,5 +5,5 @@ if ! conda info --envs | grep -q "Phishpedia"; then
   exit 1
 fi
 
-conda activate Phishpedia
+source activate Phishpedia
 python ./phishpedia/test.py
