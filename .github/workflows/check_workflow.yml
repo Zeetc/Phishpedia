@@ -26,7 +26,7 @@ jobs:
     - name: Run run_bash.sh and check for errors  # 自动执行demo示例，查看是否报错
       run: |
         chmod +x run_bash.sh
-        output=$(./run_bash.sh)
+        output=$(bash ./run_bash.sh)
         echo "$output"
 
         # 检查输出是否包含 "error" 字符串
