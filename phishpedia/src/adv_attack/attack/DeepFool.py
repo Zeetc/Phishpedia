@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd.gradcheck import zero_gradients
-from torch.autograd import Variable
 import numpy as np
 import copy
 
@@ -29,7 +28,7 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
 
     loop_i = 0
 
-    x = Variable(pert_image, requires_grad=True)
+    x = torch.tensor(pert_image, requires_grad=True)
     fs = model(x)
     fs_list = [fs[0, I[k]] for k in range(num_classes)]
     k_i = label
@@ -51,7 +50,7 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
 
             # set new w_k and new f_k
             w_k = cur_grad - grad_orig
-            f_k = (fs[0, I[k]] - fs[0, I[0]]).data.detach().cpu().numpy()
+            f_k = (fs[0, I[k]] - fs[0, I[0]]).detach().cpu().numpy()
 
             if np.linalg.norm(w_k.flatten()) == 0.0: # if w_k is all zero, no perturbation at all
                 pert_k = 0.0 * abs(f_k)
@@ -76,11 +75,11 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
 
         x = Variable(pert_image, requires_grad=True)
         fs = model(x)
-        k_i = np.argmax(fs.data.detach().cpu().numpy().flatten())
+        k_i = np.argmax(fs.detach().cpu().numpy().flatten())
 
         loop_i += 1
         if loop_i >= max_iter:
             break
 
-    return x.data
+    return x
 
