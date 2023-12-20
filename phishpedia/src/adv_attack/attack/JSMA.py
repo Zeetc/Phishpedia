@@ -48,7 +48,8 @@ def saliency_map(jacobian, search_space, target_index):
     saliency_map = torch.mul(torch.mul(alpha, torch.abs(beta)), mask.float())
 
     # get the maximum index
-    row_idx, col_idx = (saliency_map == torch.max(saliency_map)).nonzero()[0]
+    max_idx = torch.argmax(saliency_map)
+    row_idx, col_idx = max_idx // saliency_map.shape[1], max_idx % saliency_map.shape[1]
     return row_idx, col_idx
 
 
