@@ -156,8 +156,8 @@ class DAGAttacker:
                 save_path = os.path.join(vis_save_dir, f"{i}.jpg")
                 save_adv_path = os.path.join(vis_save_dir, f"{i}_adv.jpg")
 
-                cv2.imwrite(save_path, vis_og[:, :, ::-1])
-                cv2.imwrite(save_adv_path, vis_adv[:, :, ::-1])
+                cv2.imwrite(save_path, vis_og)
+                cv2.imwrite(save_adv_path, vis_adv)
                 print(f"Saved visualization to {save_path}")
 
             # Save predictions as COCO results json format
