@@ -197,6 +197,7 @@ class DAGAttacker:
         # Record gradients for image
         images.tensor.requires_grad = True
 
+        # 可以取消以下的注释
         # if len(target_boxes) == 0:
         #     return self._post_process_image(images.tensor[0])
 
