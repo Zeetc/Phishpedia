@@ -70,7 +70,7 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
 
     # Make a clone since we will alter the values
     pert_image = copy.deepcopy(image)
-    x = Variable(pert_image, requires_grad=True)
+    x = torch.tensor(pert_image, requires_grad=True)
 
     output = model(x)
     label = output.max(1, keepdim=True)[1]
