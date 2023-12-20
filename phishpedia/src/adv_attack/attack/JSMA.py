@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd.gradcheck import zero_gradients
-from torch.autograd import Variable
 import numpy as np
 import copy
 
@@ -81,7 +80,7 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
     while label != target:
 
         # Skip the pixels that have been attacked before
-        search_space = (x.data[0].sum(0) > clip_min*x.data.shape[1]) & (x.data[0].sum(0) < clip_max*x.data.shape[1])
+        search_space = (x[0].sum(0) > clip_min*x.shape[1]) & (x[0].sum(0) < clip_max*x.shape[1])
 
         # Calculate Jacobian
         jacobian = compute_jacobian(model, num_classes, x, output)
@@ -90,7 +89,7 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
         row_idx, col_idx = saliency_map(jacobian, search_space, target)
 
         # increase to its maximum value
-        x.data[0, :, row_idx, col_idx] = clip_max
+        x[0, :, row_idx, col_idx] = clip_max
 
         # recompute prediction
         output = model(x)
@@ -100,6 +99,6 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
         if count >= max_iter:
             break
 
-    return x.data
+    return x
 
 
