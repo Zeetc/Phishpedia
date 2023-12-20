@@ -5,7 +5,7 @@ import torch.optim as optim
 from torch.autograd.gradcheck import zero_gradients
 import numpy as np
 import copy
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, clip_min=-1.0, clip_max=1.0):
     '''
     https://github.com/LTS4/DeepFool/tree/master/Python
@@ -70,7 +70,7 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
             r_i =  (pert+1e-4) * w / np.linalg.norm(w)
         r_tot = np.float32(r_tot + r_i)
 
-        pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).cuda()
+        pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).to(device)
         pert_image = torch.clamp(pert_image, clip_min, clip_max)
 
         x = Variable(pert_image, requires_grad=True)
