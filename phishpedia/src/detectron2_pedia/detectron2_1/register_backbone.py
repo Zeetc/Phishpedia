@@ -37,8 +37,8 @@ class QuantizeRelu(nn.Module):
         mask = torch.ge(x, 0).bool()  # mask for positive values
         quantize = torch.ones_like(x) * self.step_size
         out = torch.mul(torch.floor(torch.div(x, quantize)), self.step_size)  # quantize by step_size
-        out = torch.mul(out, mask)  # zero-out negative values
-        out = torch.abs(out)  # remove sign
+        out.mul_(mask)  # zero-out negative values
+        out.abs_()  # remove sign
         return out
 
 
