@@ -5,7 +5,7 @@ import torch.optim as optim
 from torch.autograd.gradcheck import zero_gradients
 import numpy as np
 import copy
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def compute_jacobian(model, num_classes, inputs, output):
     '''
     'Helper function: compute jacobian matrix of confidence score vector w.r.t. input
@@ -16,7 +16,7 @@ def compute_jacobian(model, num_classes, inputs, output):
     :return:
     '''
 
-    jacobian = torch.zeros(num_classes, *inputs.size()).cuda()
+    jacobian = torch.zeros(num_classes, *inputs.size()).to(device)
 
     for i in range(num_classes):
         zero_gradients(inputs)
