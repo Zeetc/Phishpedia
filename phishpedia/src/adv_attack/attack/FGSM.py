@@ -25,7 +25,7 @@ def fgsm(model, method, image, label, criterion, max_iter=100, epsilon=0.05, cli
 
     # initialize perturbed image
     pert_image = copy.deepcopy(image)
-    x = Variable(pert_image, requires_grad=True)
+    x = torch.tensor(pert_image, requires_grad=True)
 
     output = model(x)
     pred = output.max(1, keepdim=True)[1]
