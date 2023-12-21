@@ -24,6 +24,7 @@ def resolution_alignment(img1, img2):
 def brand_converter(brand_name):
     '''
     Helper function to deal with inconsistency in brand naming
+    以下可以用字典优化
     '''
     if brand_name == 'Adobe Inc.' or brand_name == 'Adobe Inc':
         return 'Adobe'
