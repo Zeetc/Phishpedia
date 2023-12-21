@@ -18,10 +18,10 @@ def load_config(cfg_path: Union[str, None]):
 
     if cfg_path is None:
         with open(os.path.join(os.path.dirname(__file__), 'configs.yaml')) as file:
-            configs = yaml.safe_load(file, Loader=yaml.FullLoader)
+            configs = yaml.load(file, Loader=yaml.FullLoader)
     else:
         with open(cfg_path) as file:
-            configs = yaml.safe_load(file, Loader=yaml.FullLoader)
+            configs = yaml.load(file, Loader=yaml.FullLoader)
 
     ELE_CFG_PATH = "phishpedia" + configs['ELE_MODEL']['CFG_PATH'].replace('/', os.sep)
     ELE_WEIGHTS_PATH = "phishpedia" + configs['ELE_MODEL']['WEIGHTS_PATH'].replace('/', os.sep)
