@@ -5,6 +5,8 @@ if [ -z "Phishpedia" ]; then
 else
   # 判断是否存在第一个参数，此处仅判断有无缓存，存在参数则表示有缓存
   if [ -z "$1" ]; then
+    echo "Cache loaded, no need to download files from google drive"
+  else
     echo "Going to the directory of package Phishpedia in Conda environment myenv."
     mkdir -p "phishpedia/src/detectron2_pedia/output/rcnn_2"
     cd "phishpedia/src/detectron2_pedia/output/rcnn_2" || exit 1
@@ -22,7 +24,5 @@ else
 
     download_file_4=$(gdown --id 1qSdkSSoCYUkZMKs44Rup_1DPBxHnEKl1)
     check_string_contains_error "$download_file_4" 4
-  else
-    echo "Cache loaded, no need to download files from google drive"
   fi
 fi
