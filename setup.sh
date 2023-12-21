@@ -65,7 +65,7 @@ check_string_contains_error() {
         exit 1
     fi
 }
-
+echo "所有参数: $@"
 if [ -z "Phishpedia" ]; then
   echo "Package Phishpedia not found in the Conda environment myenv."
   exit 1
