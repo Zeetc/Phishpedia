@@ -18,10 +18,29 @@ jobs:
       with:
         python-version: 3.8 # 指定python版本，github的云服务器弄conda较为复杂
 
-    - name: Run setup.sh  # 安装所需库
+    - name: Check if cache exists
+      id: cache-check
+      uses: actions/cache@v2
+      with:
+        path: |
+          phishpedia/src/detectron2_pedia/output/rcnn_2
+          phishpedia/src/siamese_pedia
+        key: ${{ runner.os }}-downloaded-files-${{ hashFiles('setup.sh') }}
+        restore-keys: |
+          ${{ runner.os }}-downloaded-files-
+
+    - name: Run setup.sh without parameters # 安装所需库，无缓存
       run: |
         chmod +x setup.sh
-        ./setup.sh
+        bash ./setup.sh
+      if: steps.cache-check.outputs.cache-hit != 'true'
+
+    - name: Run setup.sh with parameters # 安装所需库，有缓存，传入标记参数
+      run: |
+        chmod +x setup.sh
+        bash ./setup.sh 1
+      if: steps.cache-check.outputs.cache-hit == 'true'
+
 
     - name: Run run_bash.sh and check for errors  # 自动执行demo示例，查看是否报错
       run: |
