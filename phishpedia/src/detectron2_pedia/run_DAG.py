@@ -39,6 +39,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--vis-save-dir",
+        required=False,
         help="Directory to save visualized bbox prediction images",
     )
 
