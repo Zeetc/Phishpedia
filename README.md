@@ -81,7 +81,7 @@ If you encounter any problem in downloading the models, you can manually downloa
 
 3. 
 ```
-conda activate myenv
+conda activate Phishpedia
 ```
 
 Run in Python to test a single website

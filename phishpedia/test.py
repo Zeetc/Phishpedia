@@ -76,9 +76,15 @@ phish_category, pred_target, plotvis, siamese_conf, pred_boxes = test(url=url, s
                                                                       DOMAIN_MAP_PATH=DOMAIN_MAP_PATH
                                                                       )
 
+assert phish_category == 1, "Correct phish_category is 1"
 print('Phishing (1) or Benign (0) ?', phish_category)
+assert pred_target == "Google", "Correct pred_target is Google"
 print('What is its targeted brand if it is a phishing ?', pred_target)
+assert np.isclose(siamese_conf, 0.950, atol=0.2), "Correct siamese_conf is around 0.95"
 print('What is the siamese matching confidence ?', siamese_conf)
+expected_boxes = np.array([[919.2046, 333.6408, 999.83026, 362.97873]])
+assert np.isclose(pred_boxes, expected_boxes, rtol=0.05), "Correct pred_boxes is around [[919.2046, 333.6408, 999.83026, 362.97873]]"
+
 print(
     'Where is the predicted logo (in [x_min, y_min, x_max, y_max])?', pred_boxes)
 plt.imshow(plotvis[:, :, ::-1])
