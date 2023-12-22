@@ -36,7 +36,8 @@ class QuantizeRelu(nn.Module):
     def forward(self, x):
         mask = torch.ge(x, 0).bool()  # mask for positive values
         quantize = torch.ones_like(x) * self.step_size
-        out = torch.mul(torch.floor(torch.div(x, quantize)), self.step_size)  # quantize by step_size
+        out = torch.mul(torch.floor(torch.div(x, quantize)),
+                        self.step_size)  # quantize by step_size
         out.mul_(mask)  # zero-out negative values
         out.abs_()  # remove sign
         return out
@@ -395,7 +396,8 @@ def build_resnet_backbone_quantize(cfg, input_shape):
     deform_modulated = cfg.MODEL.RESNETS.DEFORM_MODULATED
     deform_num_groups = cfg.MODEL.RESNETS.DEFORM_NUM_GROUPS
     # fmt: on
-    assert res5_dilation in {1, 2}, "res5_dilation cannot be {}.".format(res5_dilation)
+    assert res5_dilation in {
+        1, 2}, "res5_dilation cannot be {}.".format(res5_dilation)
 
     num_blocks_per_stage = {
         18: [2, 2, 2, 2],
@@ -417,11 +419,13 @@ def build_resnet_backbone_quantize(cfg, input_shape):
 
     # Avoid creating variables without gradients
     # It consumes extra memory and may cause allreduce to fail
-    out_stage_idx = [{"res2": 2, "res3": 3, "res4": 4, "res5": 5}[f] for f in out_features]
+    out_stage_idx = [{"res2": 2, "res3": 3, "res4": 4, "res5": 5}[f]
+                     for f in out_features]
     max_stage_idx = max(out_stage_idx)
     for idx, stage_idx in enumerate(range(2, max_stage_idx + 1)):
         dilation = res5_dilation if stage_idx == 5 else 1
-        first_stride = 1 if idx == 0 or (stage_idx == 5 and dilation == 2) else 2
+        first_stride = 1 if idx == 0 or (
+            stage_idx == 5 and dilation == 2) else 2
         stage_kargs = {
             "num_blocks": num_blocks_per_stage[idx],
             "first_stride": first_stride,
@@ -474,4 +478,3 @@ def build_resnet_fpn_backbone_quantize(cfg, input_shape: ShapeSpec):
         fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
     )
     return backbone
-

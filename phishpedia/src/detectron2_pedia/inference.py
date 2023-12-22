@@ -69,13 +69,16 @@ def vis(img_path, pred_boxes):
     check = cv2.imread(img_path)
     if pred_boxes is None or len(pred_boxes) == 0:
         return check
-    pred_boxes = pred_boxes.numpy() if not isinstance(pred_boxes, np.ndarray) else pred_boxes
+    pred_boxes = pred_boxes.numpy() if not isinstance(
+        pred_boxes, np.ndarray) else pred_boxes
 
     # draw rectangle
     for j, box in enumerate(pred_boxes):
         if j == 0:
-            cv2.rectangle(check, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (255, 255, 0), 2)
+            cv2.rectangle(check, (int(box[0]), int(box[1])), (int(
+                box[2]), int(box[3])), (255, 255, 0), 2)
         else:
-            cv2.rectangle(check, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (36, 255, 12), 2)
+            cv2.rectangle(check, (int(box[0]), int(box[1])), (int(
+                box[2]), int(box[3])), (36, 255, 12), 2)
 
     return check

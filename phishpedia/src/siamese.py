@@ -9,7 +9,8 @@ import pickle
 from tqdm import tqdm
 import tldextract
 
-def phishpedia_config(num_classes:int, weights_path:str, targetlist_path:str, grayscale=False):
+
+def phishpedia_config(num_classes: int, weights_path: str, targetlist_path: str, grayscale=False):
     '''
     Load phishpedia configurations
     :param num_classes: number of protected brands
@@ -20,7 +21,7 @@ def phishpedia_config(num_classes:int, weights_path:str, targetlist_path:str, gr
     :return logo_feat_list: targetlist embeddings
     :return file_name_list: targetlist paths
     '''
-    
+
     # Initialize model
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = KNOWN_MODELS["BiT-M-R50x1"](head_size=num_classes, zero_head=True)
@@ -31,8 +32,8 @@ def phishpedia_config(num_classes:int, weights_path:str, targetlist_path:str, gr
     new_state_dict = OrderedDict()
     for k, v in weights.items():
         name = k.split('module.')[1]
-        new_state_dict[name]=v
-        
+        new_state_dict[name] = v
+
     model.load_state_dict(new_state_dict)
     model.to(device)
     model.eval()
@@ -40,19 +41,21 @@ def phishpedia_config(num_classes:int, weights_path:str, targetlist_path:str, gr
 #     Prediction for targetlists
     logo_feat_list = []
     file_name_list = []
-    
+
     for target in tqdm(os.listdir(targetlist_path)):
-        if target.startswith('.'): # skip hidden files
+        if target.startswith('.'):  # skip hidden files
             continue
         for logo_path in os.listdir(os.path.join(targetlist_path, target)):
             if logo_path.endswith('.png') or logo_path.endswith('.jpeg') or logo_path.endswith('.jpg') or logo_path.endswith('.PNG') \
-                                          or logo_path.endswith('.JPG') or logo_path.endswith('.JPEG'):
-                if logo_path.startswith('loginpage') or logo_path.startswith('homepage'): # skip homepage/loginpage
+                    or logo_path.endswith('.JPG') or logo_path.endswith('.JPEG'):
+                # skip homepage/loginpage
+                if logo_path.startswith('loginpage') or logo_path.startswith('homepage'):
                     continue
-                logo_feat_list.append(pred_siamese(img=os.path.join(targetlist_path, target, logo_path), 
+                logo_feat_list.append(pred_siamese(img=os.path.join(targetlist_path, target, logo_path),
                                                    model=model, grayscale=grayscale))
-                file_name_list.append(str(os.path.join(targetlist_path, target, logo_path)))
-        
+                file_name_list.append(
+                    str(os.path.join(targetlist_path, target, logo_path)))
+
     return model, np.asarray(logo_feat_list), np.asarray(file_name_list)
 
 
@@ -88,10 +91,10 @@ def phishpedia_config_easy(num_classes: int, weights_path: str):
 
 
 def phishpedia_classifier_logo(logo_boxes,
-                          domain_map_path: str,
-                          model, logo_feat_list, file_name_list, shot_path: str,
-                          url: str,
-                          ts: float):
+                               domain_map_path: str,
+                               model, logo_feat_list, file_name_list, shot_path: str,
+                               url: str,
+                               ts: float):
     '''
     Run siamese
     :param logo_boxes: torch.Tensor/np.ndarray Nx4 logo box coords
@@ -118,8 +121,8 @@ def phishpedia_classifier_logo(logo_boxes,
             min_x, min_y, max_x, max_y = coord
             bbox = [float(min_x), float(min_y), float(max_x), float(max_y)]
             matched_target, matched_domain, this_conf = siamese_inference(model, domain_map,
-                                                                    logo_feat_list, file_name_list,
-                                                                    shot_path, bbox, t_s=ts, grayscale=False)
+                                                                          logo_feat_list, file_name_list,
+                                                                          shot_path, bbox, t_s=ts, grayscale=False)
             # print(target_this, domain_this, this_conf)
             # domain matcher to avoid FP
             if matched_target is not None:
@@ -138,4 +141,3 @@ def phishpedia_classifier_logo(logo_boxes,
                 break
 
     return brand_converter(matched_target), matched_coord, this_conf
-

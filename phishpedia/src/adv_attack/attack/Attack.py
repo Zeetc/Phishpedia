@@ -13,6 +13,7 @@ class adversarial_attack():
     '''
     Perform adversarial attack
     '''
+
     def __init__(self, method, model, dataloader, device, num_classes=10, save_data=False):
         '''
         :param method: Which attack method to use
@@ -28,11 +29,11 @@ class adversarial_attack():
         self.device = device
         self.num_classes = num_classes
         self.save_data = save_data
-        
+
     def batch_attack(self):
         '''
         Run attack on a batch of data
-        
+
         '''
         # Accuracy counter
         correct = 0
@@ -43,13 +44,14 @@ class adversarial_attack():
 
         # Loop over all examples in test set
         for ct, (data, label) in tqdm(enumerate(self.dataloader)):
-            data = data.to(self.device, dtype=torch.float) 
+            data = data.to(self.device, dtype=torch.float)
             label = label.to(self.device, dtype=torch.long)
-            
+
             # Forward pass the data through the model
             output = self.model(data)
             self.model.zero_grad()
-            init_pred = output.max(1, keepdim=True)[1]  # get the index of the max log-probability
+            # get the index of the max log-probability
+            init_pred = output.max(1, keepdim=True)[1]
 
             if init_pred.item() != label.item():  # initially was incorrect --> no need to generate adversary
                 total += 1
@@ -59,32 +61,38 @@ class adversarial_attack():
             # Call Attack
             if self.method in ['fgsm', 'stepll']:
                 criterion = nn.CrossEntropyLoss()
-                perturbed_data = fgsm(self.model, self.method, data, label, criterion)
-                
+                perturbed_data = fgsm(
+                    self.model, self.method, data, label, criterion)
+
             elif self.method == 'jsma':
                 # randomly select a target class
                 target_class = init_pred
                 while target_class == init_pred:
-                    target_class = torch.randint(0, self.num_classes, (1,)).to(self.device)
+                    target_class = torch.randint(
+                        0, self.num_classes, (1,)).to(self.device)
                 print(target_class)
-                perturbed_data = jsma(self.model, self.num_classes, data, target_class)
-                
+                perturbed_data = jsma(
+                    self.model, self.num_classes, data, target_class)
+
             elif self.method == 'deepfool':
                 f_image = output.detach().cpu().numpy().flatten()
                 I = (np.array(f_image)).flatten().argsort()[::-1]
-                perturbed_data = deepfool(self.model, self.num_classes, data, label, I)
-                
+                perturbed_data = deepfool(
+                    self.model, self.num_classes, data, label, I)
+
             elif self.method == 'cw':
                 target_class = init_pred
                 while target_class == init_pred:
-                    target_class = torch.randint(0, self.num_classes, (1,)).to(self.device)
+                    target_class = torch.randint(
+                        0, self.num_classes, (1,)).to(self.device)
                 print(target_class)
-                perturbed_data = cw(self.model, self.device, data, label, target_class)
-                
+                perturbed_data = cw(self.model, self.device,
+                                    data, label, target_class)
+
             else:
-                print('Attack method is not supported， please choose your attack from [fgsm|stepll|jsma|deepfool|cw]')
-                
-                
+                print(
+                    'Attack method is not supported， please choose your attack from [fgsm|stepll|jsma|deepfool|cw]')
+
             # Re-classify the perturbed image
             self.model.zero_grad()
             self.model.eval()
@@ -95,12 +103,14 @@ class adversarial_attack():
             final_pred = output.max(1, keepdim=True)[1]
             if final_pred.item() == init_pred.item():
                 correct += 1  # still correct
-            else:# save successful attack
+            else:  # save successful attack
                 print(final_pred)
                 print(init_pred)
                 if self.save_data:
-                    os.makedirs('./data/normal_{}'.format(self.method), exist_ok=True)
-                    os.makedirs('./data/adversarial_{}'.format(self.method), exist_ok=True)
+                    os.makedirs(
+                        './data/normal_{}'.format(self.method), exist_ok=True)
+                    os.makedirs(
+                        './data/adversarial_{}'.format(self.method), exist_ok=True)
                     # Save the original instance
                     torch.save((data.detach().cpu(), init_pred.detach().cpu()),
                                './data/normal_{}/{}.pt'.format(self.method, ct_save))
@@ -120,4 +130,3 @@ class adversarial_attack():
 
         # Return the accuracy and an adversarial example
         return final_acc, adv_examples
-            

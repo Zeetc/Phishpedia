@@ -6,6 +6,7 @@ from torch.autograd.gradcheck import zero_gradients
 import numpy as np
 import copy
 
+
 def fgsm(model, method, image, label, criterion, max_iter=100, epsilon=0.05, clip_min=-1.0, clip_max=1.0):
     '''
     https://pytorch.org/tutorials/beginner/fgsm_tutorial.html
@@ -48,9 +49,9 @@ def fgsm(model, method, image, label, criterion, max_iter=100, epsilon=0.05, cli
 
         # Create the perturbed image by adjusting each pixel of the input image
         if method == 'fgsm':
-            x +=  epsilon * sign_data_grad
+            x += epsilon * sign_data_grad
         else:
-            x -=  epsilon * sign_data_grad
+            x -= epsilon * sign_data_grad
 
         # Adding clipping to maintain [0,1] range
 

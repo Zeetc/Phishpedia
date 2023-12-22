@@ -4,7 +4,8 @@ from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from phishpedia.src.detectron2_pedia.detectron2_1.adv import DAGAttacker
 from phishpedia.src.detectron2_pedia.detectron2_1.datasets import BenignMapper
-from phishpedia.src.detectron2_pedia.detectron2_1.register_backbone import * # import newly registered backbone
+# import newly registered backbone
+from phishpedia.src.detectron2_pedia.detectron2_1.register_backbone import *
 
 
 def main(args):
@@ -31,7 +32,8 @@ if __name__ == "__main__":
         required=True,
         help="Path to configuration file used to train the model",
     )
-    parser.add_argument("--weights-path", required=True, help="Path to model weights")
+    parser.add_argument("--weights-path", required=True,
+                        help="Path to model weights")
     parser.add_argument(
         "--results-save-path",
         required=True,

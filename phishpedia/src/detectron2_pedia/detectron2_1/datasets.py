@@ -19,8 +19,10 @@ benign_train_coco_path = data_dir / "coco_train.json"
 benign_test_coco_path = data_dir / "coco_test.json"
 
 # Register benign train and test sets
-register_coco_instances("benign_train", {}, benign_train_coco_path, benign_img_dir)
-register_coco_instances("benign_test", {}, benign_test_coco_path, benign_img_dir)
+register_coco_instances(
+    "benign_train", {}, benign_train_coco_path, benign_img_dir)
+register_coco_instances(
+    "benign_test", {}, benign_test_coco_path, benign_img_dir)
 
 
 def build_transform_gen(cfg, is_train):
@@ -71,8 +73,10 @@ class BenignMapper:
 
     def __init__(self, cfg, is_train=True):
         if cfg.INPUT.CROP.ENABLED and is_train:
-            self.crop_gen = T.RandomCrop(cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE)
-            logging.getLogger(__name__).info("CropGen used in training: " + str(self.crop_gen))
+            self.crop_gen = T.RandomCrop(
+                cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE)
+            logging.getLogger(__name__).info(
+                "CropGen used in training: " + str(self.crop_gen))
         else:
             self.crop_gen = None
 
@@ -87,7 +91,8 @@ class BenignMapper:
         # fmt: on
         if self.keypoint_on and is_train:
             # Flip only makes sense in training
-            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(cfg.DATASETS.TRAIN)
+            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(
+                cfg.DATASETS.TRAIN)
         else:
             self.keypoint_hflip_indices = None
 
@@ -107,9 +112,11 @@ class BenignMapper:
         Returns:
             dict: a format that builtin models in detectron2 accept
         """
-        dataset_dict = copy.deepcopy(dataset_dict)  # it will be modified by code below
+        dataset_dict = copy.deepcopy(
+            dataset_dict)  # it will be modified by code below
         # USER: Write your own image loading if it's not from a file
-        image = utils.read_image(dataset_dict["file_name"], format=self.img_format)
+        image = utils.read_image(
+            dataset_dict["file_name"], format=self.img_format)
         utils.check_image_size(dataset_dict, image)
 
         if "annotations" not in dataset_dict:
@@ -135,7 +142,8 @@ class BenignMapper:
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
-        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
+        dataset_dict["image"] = torch.as_tensor(
+            np.ascontiguousarray(image.transpose(2, 0, 1)))
 
         # USER: Remove if you don't use pre-computed proposals.
         # Most users would not need this feature.

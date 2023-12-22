@@ -61,11 +61,13 @@ def viz_data(cfg) -> List[wandb.Image]:
         if cfg.INPUT.FORMAT == "BGR":
             img = img[:, :, [2, 1, 0]]
         else:
-            img = np.asarray(Image.fromarray(img, mode=cfg.INPUT.FORMAT).convert("RGB"))
+            img = np.asarray(Image.fromarray(
+                img, mode=cfg.INPUT.FORMAT).convert("RGB"))
 
         visualizer = Visualizer(img, metadata=metadata, scale=scale)
         target_fields = per_image["instances"].get_fields()
-        labels = [metadata.thing_classes[i] for i in target_fields["gt_classes"]]
+        labels = [metadata.thing_classes[i]
+                  for i in target_fields["gt_classes"]]
         vis = visualizer.overlay_instances(
             labels=labels,
             boxes=target_fields.get("gt_boxes", None),
@@ -204,7 +206,8 @@ def create_instances(predictions, image_size, metadata, conf_threshold) -> Insta
     bbox = np.asarray([predictions[i]["bbox"] for i in chosen])
     bbox = BoxMode.convert(bbox, BoxMode.XYWH_ABS, BoxMode.XYXY_ABS)
 
-    labels = np.asarray([dataset_id_map(predictions[i]["category_id"]) for i in chosen])
+    labels = np.asarray(
+        [dataset_id_map(predictions[i]["category_id"]) for i in chosen])
 
     ret.scores = score
     ret.pred_boxes = Boxes(bbox)

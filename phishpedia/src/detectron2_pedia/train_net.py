@@ -60,7 +60,8 @@ class Trainer(DefaultTrainer):
         model = GeneralizedRCNNWithTTA(cfg, model)
         evaluators = [
             cls.build_evaluator(
-                cfg, name, output_folder=os.path.join(cfg.OUTPUT_DIR, "inference_TTA")
+                cfg, name, output_folder=os.path.join(
+                    cfg.OUTPUT_DIR, "inference_TTA")
             )
             for name in cfg.DATASETS.TEST
         ]
@@ -131,7 +132,8 @@ def main(args):
         trainer.resume_or_load(resume=args.resume)
         if cfg.TEST.AUG.ENABLED:
             trainer.register_hooks(
-                [hooks.EvalHook(0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
+                [hooks.EvalHook(
+                    0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
             )
         # Will evaluation be done at end of training?
         res = trainer.train()

@@ -6,6 +6,8 @@ from torch.autograd.gradcheck import zero_gradients
 import numpy as np
 import copy
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, clip_min=-1.0, clip_max=1.0):
     '''
     https://github.com/LTS4/DeepFool/tree/master/Python
@@ -39,7 +41,8 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
         pert = np.inf
         zero_gradients(x)
         model.zero_grad()
-        fs[0, I[0]].backward(retain_graph=True) # backpropogate the maximum confidence score
+        # backpropogate the maximum confidence score
+        fs[0, I[0]].backward(retain_graph=True)
         grad_orig = x.grad.data.detach().cpu().numpy().copy()
 
         for k in range(1, num_classes):
@@ -52,7 +55,8 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
             w_k = cur_grad - grad_orig
             f_k = (fs[0, I[k]] - fs[0, I[0]]).detach().cpu().numpy()
 
-            if np.linalg.norm(w_k.flatten()) == 0.0: # if w_k is all zero, no perturbation at all
+            # if w_k is all zero, no perturbation at all
+            if np.linalg.norm(w_k.flatten()) == 0.0:
                 pert_k = 0.0 * abs(f_k)
             else:
                 pert_k = abs(f_k)/np.linalg.norm(w_k.flatten())
@@ -67,7 +71,7 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
         if np.linalg.norm(w) == 0.0:
             r_i = (pert+1e-4) * w
         else:
-            r_i =  (pert+1e-4) * w / np.linalg.norm(w)
+            r_i = (pert+1e-4) * w / np.linalg.norm(w)
         r_tot = np.float32(r_tot + r_i)
 
         pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).to(device)
@@ -82,4 +86,3 @@ def deepfool(model, num_classes, image, label, I, overshoot=0.02, max_iter=100, 
             break
 
     return x
-

@@ -75,7 +75,8 @@ class DAGAttacker:
         self.n_classes = self.cfg.MODEL.ROI_HEADS.NUM_CLASSES
         self.metadata = MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0])
         # HACK Only specific for this dataset
-        self.metadata.thing_classes = ["logo", "input", "button", "label", "block"]
+        self.metadata.thing_classes = [
+            "logo", "input", "button", "label", "block"]
         # self.contiguous_id_to_thing_id = {
         #     v: k for k, v in self.metadata.thing_dataset_id_to_contiguous_id.items()
         # }
@@ -136,7 +137,8 @@ class DAGAttacker:
                 instances = instances[mask]
 
                 v = Visualizer(perturbed_image[:, :, ::-1], self.metadata)
-                vis_adv = v.draw_instance_predictions(instances.to("cpu")).get_image()
+                vis_adv = v.draw_instance_predictions(
+                    instances.to("cpu")).get_image()
 
                 # Save original predictions
                 outputs = self(original_image)
@@ -145,7 +147,8 @@ class DAGAttacker:
                 instances = instances[mask]
 
                 v = Visualizer(original_image[:, :, ::-1], self.metadata)
-                vis_og = v.draw_instance_predictions(instances.to("cpu")).get_image()
+                vis_og = v.draw_instance_predictions(
+                    instances.to("cpu")).get_image()
 
                 # Save side-by-side
                 #                 concat = np.concatenate((vis_og, vis_adv), axis=1)
@@ -220,7 +223,8 @@ class DAGAttacker:
             # i.e. filter for correctly predicted targets;
             # only attack targets that are still correctly predicted so far
             # FIXME
-            active_cond = logits.argmax(dim=1) == target_labels  # relaxed stopping criteria
+            # relaxed stopping criteria
+            active_cond = logits.argmax(dim=1) == target_labels
             #             active_cond = logits.argmax(dim=1) != adv_labels
 
             target_boxes = target_boxes[active_cond]
@@ -235,7 +239,8 @@ class DAGAttacker:
 
             # Compute total loss
             # FIXME Use before or after softmax?
-            target_loss = F.cross_entropy(logits, target_labels, reduction="sum")
+            target_loss = F.cross_entropy(
+                logits, target_labels, reduction="sum")
             adv_loss = F.cross_entropy(logits, adv_labels, reduction="sum")
             # Make every target incorrectly predicted as the adversarial label
             total_loss = target_loss - adv_loss
@@ -247,7 +252,8 @@ class DAGAttacker:
             # Apply perturbation on image
             with torch.no_grad():
                 # Normalize grad
-                image_perturb = ( self.gamma / image_grad.norm(float("inf")) ) * image_grad
+                image_perturb = (
+                    self.gamma / image_grad.norm(float("inf"))) * image_grad
                 images.tensor += image_perturb
 
             # Zero gradients
@@ -284,7 +290,8 @@ class DAGAttacker:
         # For each bounding box
         for i, box in enumerate(pred_boxes):
             box = box.cpu().numpy()
-            x1, y1, x2, y2 = float(box[0]), float(box[1]), float(box[2]), float(box[3])
+            x1, y1, x2, y2 = float(box[0]), float(
+                box[1]), float(box[2]), float(box[3])
             width = x2 - x1
             height = y2 - y1
 
@@ -342,7 +349,8 @@ class DAGAttacker:
         # FIXME Make this more efficient / vectorized?
         for i in range(len(labels)):
             # FIXME Include or exclude background class?
-            incorrect_labels = [l for l in range(self.n_classes) if l != labels[i]]
+            incorrect_labels = [l for l in range(
+                self.n_classes) if l != labels[i]]
             adv_labels[i] = random.choice(incorrect_labels)
 
         return adv_labels.to(self.device)
@@ -439,7 +447,8 @@ class DAGAttacker:
         # Filter for score of proposal > 0.1
         # Get class of paired gt_box
         gt_classes_repeat = gt_classes.repeat(n_proposals, 1)
-        paired_gt_classes = gt_classes_repeat[torch.arange(n_proposals), paired_gt_idx]
+        paired_gt_classes = gt_classes_repeat[torch.arange(
+            n_proposals), paired_gt_idx]
         # Get scores of corresponding class
         paired_scores = scores[torch.arange(n_proposals), paired_gt_classes]
         score_cond = paired_scores > 0.1
@@ -465,7 +474,8 @@ class DAGAttacker:
                 # whether the model expects BGR inputs or RGB
                 original_image = original_image[:, :, ::-1]
             height, width = original_image.shape[:2]
-            image = self.aug.get_transform(original_image).apply_image(original_image)
+            image = self.aug.get_transform(
+                original_image).apply_image(original_image)
             image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
 
             inputs = {"image": image, "height": height, "width": width}

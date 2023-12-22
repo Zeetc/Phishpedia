@@ -3,8 +3,7 @@ import os
 import argparse
 import time
 from .src.util.chrome import *
-# import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 #####################################################################################################################
 # ** Step 1: Enter Layout detector, get predicted elements
@@ -49,16 +48,15 @@ def test(url, screenshot_path, ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEAT
         return phish_category, pred_target, plotvis, siamese_conf, pred_boxes
     print('Entering siamese')
 
-
     ######################## Step2: Siamese (logo matcher) ########################################
     pred_target, matched_coord, siamese_conf = phishpedia_classifier_logo(logo_boxes=pred_boxes,
-                                                                     domain_map_path=DOMAIN_MAP_PATH,
-                                                                     model=SIAMESE_MODEL,
-                                                                     logo_feat_list=LOGO_FEATS,
-                                                                     file_name_list=LOGO_FILES,
-                                                                     url=url,
-                                                                     shot_path=screenshot_path,
-                                                                     ts=SIAMESE_THRE)
+                                                                          domain_map_path=DOMAIN_MAP_PATH,
+                                                                          model=SIAMESE_MODEL,
+                                                                          logo_feat_list=LOGO_FEATS,
+                                                                          file_name_list=LOGO_FILES,
+                                                                          url=url,
+                                                                          shot_path=screenshot_path,
+                                                                          ts=SIAMESE_THRE)
 
     if pred_target is None:
         print('Did not match to any brand, report as benign')
@@ -91,7 +89,7 @@ def runit(folder, results, ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEATS, L
     for item in tqdm(os.listdir(directory)):
         start_time = time.time()
 
-        if item in open(results_path, encoding='ISO-8859-1').read(): # have been predicted
+        if item in open(results_path, encoding='ISO-8859-1').read():  # have been predicted
             continue
 
         print(item)
@@ -152,9 +150,12 @@ if __name__ == "__main__":
 
     # os.environ["CUDA_VISIBLE_DEVICES"]="1"
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', "--folder", help='Input folder path to parse',  default='./datasets/cannot_detect_logo')
-    parser.add_argument('-r', "--results", help='Input results file name', default='./debug.txt')
-    parser.add_argument('-c', "--config", help='Config file path', default=None)
+    parser.add_argument('-f', "--folder", help='Input folder path to parse',
+                        default='./datasets/cannot_detect_logo')
+    parser.add_argument('-r', "--results",
+                        help='Input results file name', default='./debug.txt')
+    parser.add_argument(
+        '-c', "--config", help='Config file path', default=None)
     args = parser.parse_args()
     date = args.folder.split('/')[-1]
     directory = args.folder
@@ -230,6 +231,3 @@ if __name__ == "__main__":
     #
     # #  raise(e)
     # time.sleep(2)
-
-
-

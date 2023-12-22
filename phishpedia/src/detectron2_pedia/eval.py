@@ -13,8 +13,8 @@ def evaluate(gt_coco_path, results_coco_path):
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
-    
-    
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -30,6 +30,5 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-    
-    evaluate(args.gt_json, args.pred_json)
 
+    evaluate(args.gt_json, args.pred_json)

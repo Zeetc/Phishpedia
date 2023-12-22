@@ -6,6 +6,8 @@ from torch.autograd.gradcheck import zero_gradients
 import numpy as np
 import copy
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 def compute_jacobian(model, num_classes, inputs, output):
     '''
     'Helper function: compute jacobian matrix of confidence score vector w.r.t. input
@@ -27,7 +29,6 @@ def compute_jacobian(model, num_classes, inputs, output):
     return torch.transpose(jacobian, dim0=0, dim1=1)
 
 
-
 def saliency_map(jacobian, search_space, target_index):
     '''
     Helper function: compute saliency map and select the maximum index
@@ -36,7 +37,7 @@ def saliency_map(jacobian, search_space, target_index):
     :param target_index: take one column of jacobian
     :return:
     '''
-    
+
     jacobian = jacobian.squeeze(0)
     alpha = jacobian[target_index].sum(0).sum(0)
     beta = jacobian.sum(0).sum(0) - alpha
@@ -76,12 +77,13 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
     label = output.max(1, keepdim=True)[1]
 
     count = 0
-    
+
     # if attack is successful or reach the maximum number of iterations
     while label != target:
 
         # Skip the pixels that have been attacked before
-        search_space = (x[0].sum(0) > clip_min*x.shape[1]) & (x[0].sum(0) < clip_max*x.shape[1])
+        search_space = (x[0].sum(0) > clip_min*x.shape[1]
+                        ) & (x[0].sum(0) < clip_max*x.shape[1])
 
         # Calculate Jacobian
         jacobian = compute_jacobian(model, num_classes, x, output)
@@ -101,5 +103,3 @@ def jsma(model, num_classes, image, target, max_iter=100, clip_min=-1.0, clip_ma
             break
 
     return x
-
-

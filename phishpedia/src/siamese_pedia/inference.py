@@ -42,7 +42,7 @@ def pred_siamese(img, model, imshow=False, title=None, grayscale=False):
     img = Image.open(img) if isinstance(img, str) else img
     img = img.convert("L").convert("RGB") if grayscale else img.convert("RGB")
 
-    ## Resize the image while keeping the original aspect ratio
+    # Resize the image while keeping the original aspect ratio
     pad_color = 255 if grayscale else (255, 255, 255)
     img = ImageOps.expand(img, (
         (max(img.size) - img.size[0]) // 2, (max(img.size) - img.size[1]) // 2,
@@ -50,7 +50,7 @@ def pred_siamese(img, model, imshow=False, title=None, grayscale=False):
 
     img = img.resize((img_size, img_size))
 
-    ## Plot the image
+    # Plot the image
     if imshow:
         if grayscale:
             plt.imshow(np.asarray(img), cmap='gray')
@@ -65,7 +65,8 @@ def pred_siamese(img, model, imshow=False, title=None, grayscale=False):
         img = img[None, ...].to(device)
         #         logo_feat = model.features(img).squeeze(-1).squeeze(-1)
         logo_feat = model.features(img)
-        logo_feat = l2_norm(logo_feat).squeeze(0).cpu().numpy()  # L2-normalization final shape is (2048,)
+        # L2-normalization final shape is (2048,)
+        logo_feat = l2_norm(logo_feat).squeeze(0).cpu().numpy()
 
     return logo_feat
 
@@ -90,45 +91,51 @@ def siamese_inference(model, domain_map, logo_feat_list, file_name_list, shot_pa
         print('Screenshot cannot be open')
         return None, None, None
 
-    ## get predicted box --> crop from screenshot
+    # get predicted box --> crop from screenshot
     cropped = img.crop((gt_bbox[0], gt_bbox[1], gt_bbox[2], gt_bbox[3]))
-    img_feat = pred_siamese(cropped, model, imshow=False, title='Original rcnn box', grayscale=grayscale)
+    img_feat = pred_siamese(cropped, model, imshow=False,
+                            title='Original rcnn box', grayscale=grayscale)
 
-    ## get cosine similarity with every protected logo
-    sim_list = logo_feat_list @ img_feat.T  # take dot product for every pair of embeddings (Cosine Similarity)
+    # get cosine similarity with every protected logo
+    # take dot product for every pair of embeddings (Cosine Similarity)
+    sim_list = logo_feat_list @ img_feat.T
     pred_brand_list = file_name_list
 
     assert len(sim_list) == len(pred_brand_list)
 
-    ## get top 3 brands
+    # get top 3 brands
     idx = np.argsort(sim_list)[::-1][:3]
     pred_brand_list = np.array(pred_brand_list)[idx]
     sim_list = np.array(sim_list)[idx]
 
     # top1,2,3 candidate logos
     top3_logolist = [Image.open(x) for x in pred_brand_list]
-    top3_brandlist = [brand_converter(os.path.basename(os.path.dirname(x))) for x in pred_brand_list]
+    top3_brandlist = [brand_converter(os.path.basename(
+        os.path.dirname(x))) for x in pred_brand_list]
     top3_domainlist = [domain_map[x] for x in top3_brandlist]
     top3_simlist = sim_list
 
     for j in range(3):
         predicted_brand, predicted_domain = None, None
 
-        ## If we are trying those lower rank logo, the predicted brand of them should be the same as top1 logo, otherwise might be false positive
+        # If we are trying those lower rank logo, the predicted brand of them should be the same as top1 logo, otherwise might be false positive
         if top3_brandlist[j] != top3_brandlist[0]:
             continue
 
-        ## If the largest similarity exceeds threshold
+        # If the largest similarity exceeds threshold
         if top3_simlist[j] >= t_s:
             predicted_brand = top3_brandlist[j]
             predicted_domain = top3_domainlist[j]
             final_sim = top3_simlist[j]
 
-        ## Else if not exceed, try resolution alignment, see if can improve
+        # Else if not exceed, try resolution alignment, see if can improve
         else:
-            cropped, candidate_logo = resolution_alignment(cropped, top3_logolist[j])
-            img_feat = pred_siamese(cropped, model, imshow=False, title=None, grayscale=grayscale)
-            logo_feat = pred_siamese(candidate_logo, model, imshow=False, title=None, grayscale=grayscale)
+            cropped, candidate_logo = resolution_alignment(
+                cropped, top3_logolist[j])
+            img_feat = pred_siamese(
+                cropped, model, imshow=False, title=None, grayscale=grayscale)
+            logo_feat = pred_siamese(
+                candidate_logo, model, imshow=False, title=None, grayscale=grayscale)
             final_sim = logo_feat.dot(img_feat)
             if final_sim >= t_s:
                 predicted_brand = top3_brandlist[j]
@@ -136,7 +143,7 @@ def siamese_inference(model, domain_map, logo_feat_list, file_name_list, shot_pa
             else:
                 break  # no hope, do not try other lower rank logos
 
-        ## If there is a prediction, do aspect ratio check
+        # If there is a prediction, do aspect ratio check
         if predicted_brand is not None:
             ratio_crop = cropped.size[0] / cropped.size[1]
             ratio_logo = top3_logolist[j].size[0] / top3_logolist[j].size[1]
@@ -148,7 +155,3 @@ def siamese_inference(model, domain_map, logo_feat_list, file_name_list, shot_pa
                 return predicted_brand, predicted_domain, final_sim
 
     return None, None, top3_simlist[0]
-
-
-
-
