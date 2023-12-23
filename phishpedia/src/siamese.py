@@ -42,12 +42,12 @@ def phishpedia_config(num_classes: int, weights_path: str, targetlist_path: str,
     logo_feat_list = []
     file_name_list = []
 
+    logo_extensions = ('.png', '.jpeg', '.jpg', '.PNG', '.JPG', '.JPEG')
     for target in tqdm(os.listdir(targetlist_path)):
         if target.startswith('.'):  # skip hidden files
             continue
         for logo_path in os.listdir(os.path.join(targetlist_path, target)):
-            if logo_path.endswith('.png') or logo_path.endswith('.jpeg') or logo_path.endswith('.jpg') or logo_path.endswith('.PNG') \
-                    or logo_path.endswith('.JPG') or logo_path.endswith('.JPEG'):
+            if logo_path.endswith(logo_extensions):
                 # skip homepage/loginpage
                 if logo_path.startswith('loginpage') or logo_path.startswith('homepage'):
                     continue
@@ -130,7 +130,9 @@ def phishpedia_classifier_logo(logo_boxes,
                 # if tldextract.extract(url).domain + '.' + tldextract.extract(url).suffix not in matched_domain:
                 if tldextract.extract(url).domain not in matched_domain:
                     # avoid fp due to godaddy domain parking, ignore webmail provider (ambiguous)
-                    if matched_target == 'GoDaddy' or matched_target == "Webmail Provider" or matched_target == "Government of the United Kingdom":
+                    matched_target_whitelist = [
+                        'GoDaddy', 'Webmail Provider', 'Government of the United Kingdom']
+                    if matched_target in matched_target_whitelist:
                         matched_target = None  # ignore the prediction
                         matched_domain = None  # ignore the prediction
                 else:  # benign, real target

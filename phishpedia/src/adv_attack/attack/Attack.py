@@ -91,7 +91,7 @@ class adversarial_attack():
 
             else:
                 print(
-                    'Attack method is not supported， please choose your attack from [fgsm|stepll|jsma|deepfool|cw]')
+                    'Attack method is not supported, please choose your attack from [fgsm|stepll|jsma|deepfool|cw]')
 
             # Re-classify the perturbed image
             self.model.zero_grad()

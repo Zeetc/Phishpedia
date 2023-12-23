@@ -118,7 +118,9 @@ def siamese_inference(model, domain_map, logo_feat_list, file_name_list, shot_pa
     for j in range(3):
         predicted_brand, predicted_domain = None, None
 
-        # If we are trying those lower rank logo, the predicted brand of them should be the same as top1 logo, otherwise might be false positive
+        # If we are trying those lower rank logo,
+        # the predicted brand of them should be the same as top1 logo,
+        # otherwise might be false positive
         if top3_brandlist[j] != top3_brandlist[0]:
             continue
 

@@ -5,13 +5,13 @@ import time
 from .src.util.chrome import *
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-#####################################################################################################################
+###########################################################################################
 # ** Step 1: Enter Layout detector, get predicted elements
 # ** Step 2: Enter Siamese, siamese match a phishing target, get phishing target
 
 # **         If Siamese report no target, Return Benign, None
 # **         Else Siamese report a target, Return Phish, phishing target
-#####################################################################################################################
+###########################################################################################
 
 
 def test(url, screenshot_path, ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEATS, LOGO_FILES, DOMAIN_MAP_PATH):
@@ -105,7 +105,8 @@ def runit(folder, results, ELE_MODEL, SIAMESE_THRE, SIAMESE_MODEL, LOGO_FEATS, L
         except:
             url = 'https://www.' + item
 
-        phish_category, phish_target, plotvis, siamese_conf, pred_boxes = test(url=url, screenshot_path=screenshot_path,
+        phish_category, phish_target, plotvis, siamese_conf, pred_boxes = test(url=url,
+                                                                               screenshot_path=screenshot_path,
                                                                                ELE_MODEL=ELE_MODEL,
                                                                                SIAMESE_THRE=SIAMESE_THRE,
                                                                                SIAMESE_MODEL=SIAMESE_MODEL,

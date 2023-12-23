@@ -57,7 +57,8 @@ def phishpedia_eval(data_dir, mode, siamese_ts, write_txt):
         else:
             # Phishpedia module
             start_time = time.time()
-            pred_target, _, _ = phishpedia_classifier_logo(logo_boxes=pred_boxes, domain_map_path=domain_map_path,
+            pred_target, _, _ = phishpedia_classifier_logo(logo_boxes=pred_boxes,
+                                                           domain_map_path=domain_map_path,
                                                            model=pedia_model,
                                                            logo_feat_list=logo_feat_list,
                                                            file_name_list=file_name_list,

@@ -6,6 +6,7 @@ import subprocess
 from typing import Union
 import yaml
 
+
 def load_config(cfg_path: Union[str, None]):
 
     if cfg_path is None:
